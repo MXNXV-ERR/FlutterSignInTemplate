@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -37,22 +36,3 @@ class _HomeScrState extends State<HomeScr> {
     );
   }
 }
-
-
-// class HomeScr extends StatelessWidget {
-//   const HomeScr({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-
-//     var controller = WebViewController()
-//     ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//     ..loadRequest(Uri.parse('htpp://edukag.in'));
-
-//     return Scaffold(
-//       body: WebViewWidget(
-//         controller: controller,  
-//       ),
-//     );
-//   }
-// }
