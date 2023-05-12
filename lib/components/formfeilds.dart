@@ -24,7 +24,7 @@ class _TxtFrmFldState extends State<TxtFrmFld> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 300,
+      width: 350,
       child: TextFormField(
         controller: widget.controller,
         validator: widget.validator,
@@ -65,7 +65,7 @@ class _PwdFrmFldState extends State<PwdFrmFld> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 300,
+      width: 350,
       child: TextFormField(
         controller: widget.controller,
         validator: widget.validator,

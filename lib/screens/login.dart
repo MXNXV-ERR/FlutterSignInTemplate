@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:signin_template/components/phonesigninbutton.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:signin_template/screens/homescreen.dart';
 import 'package:signin_template/screens/signup.dart';
-
-import '../components/auth.dart';
+import 'package:signin_template/services/auth.dart';
 import '../components/formfeilds.dart';
+import '../components/googlesigninbutton.dart';
+import '../components/liftedbox.dart';
 import '../components/notifier.dart';
 
 class LogInScr extends StatefulWidget {
@@ -104,7 +107,13 @@ class _LogInScrState extends State<LogInScr> {
                         return const Text('Error initializing firebase');
                       } else if (snapshot.connectionState ==
                           ConnectionState.done) {
-                        return const GoogleSignInButton();
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            GoogleSignInButton(),
+                            PhoneOtpSignInButton(),
+                          ],
+                        );
                       }
                       return const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -125,17 +134,16 @@ class _LogInScrState extends State<LogInScr> {
     final FormState? form = _formkey.currentState;
     if (form!.validate()) {
       try {
-        UserCredential result = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+        User? result = await Auth.signInWithEmailAndPassword(email, password);
         if (!mounted) return;
         //print(result.user!.uid);
-        if (result.user != null) {
+        if (result != null) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => const HomeScr()));
+              builder: (context) => HomeScr(user: result,)));
         }
-      } on FirebaseException catch (e) {
+      } on Exception catch (e) {
         // print(e);
-        Notifiers.showSnackBarScaffoldLock(e.message.toString(), _scaffoldKey);
+        Notifiers.showSnackBarScaffoldLock(e.toString(), _scaffoldKey);
       }
     } else {
       // print("No");
@@ -230,29 +238,5 @@ class _LogInScrState extends State<LogInScr> {
     );
   }
 
-  Widget liftedBoxBuilder({required Widget child}) {
-    return Center(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: IntrinsicHeight(
-          child: IntrinsicWidth(
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
-                    )
-                  ]),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0), child: child),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  
 }

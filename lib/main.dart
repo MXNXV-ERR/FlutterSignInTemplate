@@ -4,6 +4,7 @@ import 'package:signin_template/firebase_options.dart';
 import 'package:signin_template/screens/homescreen.dart';
 import 'package:signin_template/screens/login.dart';
 import 'package:signin_template/screens/splahscreen.dart';
+import 'package:signin_template/services/auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/':(context) => const SplashScr(),
         '/login':(context) => const LogInScr(),
-        '/home':(context) => const HomeScr(),
+        '/home':(context) => HomeScr(user: Auth.auth.currentUser,),
       },
       debugShowCheckedModeBanner: false,
       title: 'Sign-in Template',

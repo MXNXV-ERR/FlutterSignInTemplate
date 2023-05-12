@@ -10,10 +10,12 @@ import 'package:signin_template/components/notifier.dart';
 import 'package:signin_template/screens/homescreen.dart';
 
 class Auth {
+  static FirebaseAuth auth = FirebaseAuth.instance;
+
+
   static Future<User?> signinWithGoogle({
     required BuildContext context,
   }) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
     //for web
@@ -70,15 +72,6 @@ class Auth {
     return user;
   }
 
-  // static SnackBar customSnackBAr({required String content}) {
-  //   return SnackBar(
-  //       backgroundColor: Colors.black,
-  //       content: Text(
-  //         content,
-  //         style: const TextStyle(color: Colors.redAccent),
-  //       ));
-  // }
-
   static Future<FirebaseApp?> initializeFirebase(
       {required BuildContext context}) async {
     FirebaseApp firebaseApp = await Firebase.initializeApp(
@@ -87,7 +80,7 @@ class Auth {
 
     if (user != null) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => HomeScr()));
+          builder: (context) => HomeScr(user: user,)));
     }
 
     return firebaseApp;
@@ -100,7 +93,7 @@ class Auth {
       if (!kIsWeb) {
         await googleSignIn.signOut();
       }
-      await FirebaseAuth.instance.signOut();
+      await auth.signOut();
     } catch (e) {
       Notifiers.showSnackBar(context, 'Error Signing out.Try Again...');
       // ScaffoldMessenger.of(context).showSnackBar(
@@ -108,82 +101,25 @@ class Auth {
     }
   }
 
-  static Future<UserCredential> createUserWithEmailandPassword(
-      String email, String password) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+  static Future<User?> createUserWithEmailandPassword(
+      String email, String password,String displayName) async {
     final UserCredential result = await auth.createUserWithEmailAndPassword(
         email: email, password: password);
-    return result;
-  }
-}
-
-class GoogleSignInButton extends StatefulWidget {
-  const GoogleSignInButton({Key? key}) : super(key: key);
-
-  @override
-  State<GoogleSignInButton> createState() => _GoogleSignInButtonState();
-}
-
-class _GoogleSignInButtonState extends State<GoogleSignInButton> {
-  bool _isSigningIn = false;
-  String groupValue = "Male";
-  valueChanged(Object? e) {
-    setState(() {
-      if (e == "Male") {
-        groupValue = e.toString();
-      } else if (e == "Female") {
-        groupValue = e.toString();
-      }
-    });
+    await auth.currentUser?.updateDisplayName(displayName);
+    return result.user;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 15.0),
-        child: _isSigningIn
-            ? const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-              )
-            : SizedBox(
-                height: 75.0,
-                width: 75.0,
-                child: IconButton(
-                    onPressed: () async {
-                      setState(() {
-                        _isSigningIn = true;
-                      });
-                      User? user =
-                          await Auth.signinWithGoogle(context: context);
-                      setState(() {
-                        _isSigningIn = false;
-                      });
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const HomeScr()));
-                    },
-                    icon: Image.asset(
-                      'assets/images/Google.png',
-                      fit: BoxFit.fill,
-                    ))));
+  static Future<User?> signInWithEmailAndPassword(
+      String email, String password) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    final UserCredential result = await auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    
+    return result.user;
   }
 
-  Future<String> getGender() async {
-    String groupValue = "Male";
-    AlertDialog(
-      title: const Text("Gender"),
-      actions: [
-        Radio(
-            value: "Male",
-            groupValue: groupValue,
-            onChanged: (e) => valueChanged(e)),
-        const Text("Male    "),
-        Radio(
-            value: "Female",
-            groupValue: groupValue,
-            onChanged: (e) => valueChanged(e)),
-        const Text("Female"),
-      ],
-    );
-    return groupValue;
+  static Future<User?>? signInWithPhoneNumber(String phoneno)
+  {
+      return null;
   }
 }
